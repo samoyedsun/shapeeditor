@@ -202,8 +202,8 @@ void ExportToCSV(const std::string& filename) {
 
 void DrawConvertWindow()
 {
-    ImGui::SetNextWindowPos(ImVec2(20, 20), ImGuiCond_FirstUseEver);
-    ImGui::SetNextWindowSize(ImVec2(150, 500), ImGuiCond_FirstUseEver);
+    ImGui::SetNextWindowPos(ImVec2(0, 0), ImGuiCond_FirstUseEver);
+    ImGui::SetNextWindowSize(ImVec2(130, 800), ImGuiCond_FirstUseEver);
     ImGui::Begin(WcharToChar(std::wstring(L"控制面板")).c_str());
     
     // 显示状态信息
