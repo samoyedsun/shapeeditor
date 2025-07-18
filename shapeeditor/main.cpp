@@ -104,44 +104,62 @@ void DrawGrid() {
         ImVec2(centerCellPos.x, centerCellPos.y + cross_size),
         IM_COL32(255, 0, 0, 255), 2.0f);
     // 绘制参考方向指示器
-    const float arrow_size = 20.0f;
+    const float arrow_size = 80.0f;
+    const float arrow_head_size = 8.0f;
+    // 计算箭头起始位置
+    ImVec2 arrow_base(centerCellPos);
+
     if (offsetMode == ORTHOGONAL) {
-        // 正交方向箭头（从中心格子中心出发）
+        // 正方向模式
+        // 向上箭头（绿色）
         draw_list->AddLine(centerCellPos, 
-                        ImVec2(centerCellPos.x + arrow_size * 2, centerCellPos.y), 
-                        IM_COL32(0, 255, 0, 255), 2.0f);
-        draw_list->AddLine(centerCellPos, 
-                        ImVec2(centerCellPos.x, centerCellPos.y + arrow_size * 2), 
+                        ImVec2(centerCellPos.x, centerCellPos.y - arrow_size), 
                         IM_COL32(0, 255, 0, 255), 2.0f);
         draw_list->AddTriangleFilled(
-            ImVec2(centerCellPos.x + arrow_size * 2, centerCellPos.y - 3),
-            ImVec2(centerCellPos.x + arrow_size * 2, centerCellPos.y + 3),
-            ImVec2(centerCellPos.x + arrow_size * 2 + 8, centerCellPos.y),
+            ImVec2(centerCellPos.x - arrow_head_size, centerCellPos.y - arrow_size),
+            ImVec2(centerCellPos.x + arrow_head_size, centerCellPos.y - arrow_size),
+            ImVec2(centerCellPos.x, centerCellPos.y - arrow_size - arrow_head_size),
             IM_COL32(0, 255, 0, 255));
-        draw_list->AddTriangleFilled(
-            ImVec2(centerCellPos.x - 3, centerCellPos.y + arrow_size * 2),
-            ImVec2(centerCellPos.x + 3, centerCellPos.y + arrow_size * 2),
-            ImVec2(centerCellPos.x, centerCellPos.y + arrow_size * 2 + 8),
-            IM_COL32(0, 255, 0, 255));
-    } else {
-        // 斜方向箭头（从中心格子中心出发）
-        draw_list->AddLine(centerCellPos, 
-                        ImVec2(centerCellPos.x + arrow_size * 1.414f, centerCellPos.y + arrow_size * 1.414f), 
-                        IM_COL32(0, 255, 255, 255), 2.0f);
-        draw_list->AddLine(centerCellPos, 
-                        ImVec2(centerCellPos.x - arrow_size * 1.414f, centerCellPos.y + arrow_size * 1.414f), 
-                        IM_COL32(0, 255, 255, 255), 2.0f);
         
-        // 箭头头部
+        // 向右箭头（黄色）
+        draw_list->AddLine(centerCellPos, 
+                        ImVec2(centerCellPos.x + arrow_size, centerCellPos.y), 
+                        IM_COL32(255, 255, 0, 255), 2.0f);
         draw_list->AddTriangleFilled(
-            ImVec2(centerCellPos.x + arrow_size * 1.414f - 5, centerCellPos.y + arrow_size * 1.414f - 5),
-            ImVec2(centerCellPos.x + arrow_size * 1.414f + 5, centerCellPos.y + arrow_size * 1.414f - 5),
-            ImVec2(centerCellPos.x + arrow_size * 1.414f, centerCellPos.y + arrow_size * 1.414f + 5),
-            IM_COL32(0, 255, 255, 255));
+            ImVec2(centerCellPos.x + arrow_size, centerCellPos.y - arrow_head_size),
+            ImVec2(centerCellPos.x + arrow_size, centerCellPos.y + arrow_head_size),
+            ImVec2(centerCellPos.x + arrow_size + arrow_head_size, centerCellPos.y),
+            IM_COL32(255, 255, 0, 255));
+    } else {
+        // 斜方向模式
+        // 向上箭头（绿色）
+        draw_list->AddLine(centerCellPos, 
+                        ImVec2(centerCellPos.x, centerCellPos.y - arrow_size), 
+                        IM_COL32(0, 255, 0, 255), 2.0f);
         draw_list->AddTriangleFilled(
-            ImVec2(centerCellPos.x - arrow_size * 1.414f - 5, centerCellPos.y + arrow_size * 1.414f - 5),
-            ImVec2(centerCellPos.x - arrow_size * 1.414f + 5, centerCellPos.y + arrow_size * 1.414f - 5),
-            ImVec2(centerCellPos.x - arrow_size * 1.414f, centerCellPos.y + arrow_size * 1.414f + 5),
+            ImVec2(centerCellPos.x - arrow_head_size, centerCellPos.y - arrow_size),
+            ImVec2(centerCellPos.x + arrow_head_size, centerCellPos.y - arrow_size),
+            ImVec2(centerCellPos.x, centerCellPos.y - arrow_size - arrow_head_size),
+            IM_COL32(0, 255, 0, 255));
+        
+        // 向右箭头（黄色）
+        draw_list->AddLine(centerCellPos, 
+                        ImVec2(centerCellPos.x + arrow_size, centerCellPos.y), 
+                        IM_COL32(255, 255, 0, 255), 2.0f);
+        draw_list->AddTriangleFilled(
+            ImVec2(centerCellPos.x + arrow_size, centerCellPos.y - arrow_head_size),
+            ImVec2(centerCellPos.x + arrow_size, centerCellPos.y + arrow_head_size),
+            ImVec2(centerCellPos.x + arrow_size + arrow_head_size, centerCellPos.y),
+            IM_COL32(255, 255, 0, 255));
+        
+        // 向右上箭头（青色）
+        draw_list->AddLine(arrow_base, 
+                        ImVec2(arrow_base.x + arrow_size*0.707f, arrow_base.y - arrow_size*0.707f), 
+                        IM_COL32(0, 255, 255, 255), 2.0f);
+        draw_list->AddTriangleFilled(
+            ImVec2(arrow_base.x + arrow_size*0.707f - 5, arrow_base.y - arrow_size*0.707f - 5),
+            ImVec2(arrow_base.x + arrow_size*0.707f + 5, arrow_base.y - arrow_size*0.707f + 5),
+            ImVec2(arrow_base.x + arrow_size*0.707f + 5, arrow_base.y - arrow_size*0.707f - 5),
             IM_COL32(0, 255, 255, 255));
     }
 }
@@ -171,29 +189,28 @@ void ExportToCSV(const std::string& filename) {
     std::ofstream file(filename);
     if (!file.is_open()) return;
     
-    // 写入CSV标题
-    file << "Grid X,Grid Y,Ortho Offset X,Ortho Offset Y,Diag Offset U,Diag Offset V\n";
+    // 写入CSV标题（同时包含两种方向的偏移）
+    file << "Grid X,Grid Y,";
+    if (offsetMode == ORTHOGONAL) {
+        file << "Ortho Forward,Ortho Right,";  // 正方向的前/右偏移
+    } else {
+        file << "Diag Forward,Diag Right,";   // 斜方向的前/右偏移
+    }
+    file << "Offset X,Offset Y\n";  // 保留原始偏移
     
-    // 中心坐标（网格坐标系）
     int centerX = GRID_SIZE / 2;
     int centerY = GRID_SIZE / 2;
     
-    // 遍历所有格子
     for (int y = 0; y < GRID_SIZE; ++y) {
         for (int x = 0; x < GRID_SIZE; ++x) {
             if (grid[y][x].selected) {
-                // 计算正交偏移（正方向）
-                int offsetX = x - centerX;
-                int offsetY = y - centerY;
-                
-                // 计算斜方向偏移（45度对角线方向）
-                // 使用轴对齐的等距坐标：U = X - Y, V = X + Y
-                int diagU = (x - centerX) - (y - centerY);
-                int diagV = (x - centerX) + (y - centerY);
-                
-                file << x << "," << y << "," 
-                     << offsetX << "," << offsetY << ","
-                     << diagU << "," << diagV << "\n";
+                int relX = x - centerX;
+                int relY = y - centerY;
+                // Forward = -Y (上方向为前)
+                // Right = X (右方向为右)
+                file << x << "," << y << ","
+                        << -relY << "," << relX << ","
+                        << relX << "," << relY << "\n";
             }
         }
     }
