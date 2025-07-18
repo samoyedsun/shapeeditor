@@ -40,9 +40,9 @@ std::string WcharToChar(const std::wstring& wstr) {
 
 //=========================================================
 // 网格设置
-const int GRID_SIZE = 15;      // 网格尺寸（奇数确保有中心点）
+const int GRID_SIZE = 25;      // 网格尺寸（奇数确保有中心点）
 const int CELL_SIZE = 30;      // 每个格子像素大小
-const ImVec4 SELECTED_COLOR = ImVec4(0.26f, 0.59f, 0.98f, 0.7f); // 选中格子颜色
+const ImVec4 SELECTED_COLOR = ImVec4(0.0f, 1.0f, 0.0f, 0.7f); // 选中格子颜色
 
 // 网格状态
 struct Cell {
@@ -90,53 +90,58 @@ void DrawGrid() {
     }
     
     // 绘制中心标记
-    const float cross_size = 8.0f;
+    ImVec2 centerCellPos(
+        center.x - (GRID_SIZE/2)*CELL_SIZE + (GRID_SIZE/2)*CELL_SIZE + CELL_SIZE/2,
+        center.y - (GRID_SIZE/2)*CELL_SIZE + (GRID_SIZE/2)*CELL_SIZE + CELL_SIZE/2
+    );
+    const float cross_size = CELL_SIZE/3.0f; // 根据格子大小调整十字大小
     draw_list->AddLine(
-        ImVec2(center.x - cross_size, center.y),
-        ImVec2(center.x + cross_size, center.y),
+        ImVec2(centerCellPos.x - cross_size, centerCellPos.y),
+        ImVec2(centerCellPos.x + cross_size, centerCellPos.y),
         IM_COL32(255, 0, 0, 255), 2.0f);
     draw_list->AddLine(
-        ImVec2(center.x, center.y - cross_size),
-        ImVec2(center.x, center.y + cross_size),
+        ImVec2(centerCellPos.x, centerCellPos.y - cross_size),
+        ImVec2(centerCellPos.x, centerCellPos.y + cross_size),
         IM_COL32(255, 0, 0, 255), 2.0f);
-    
     // 绘制参考方向指示器
     const float arrow_size = 20.0f;
     if (offsetMode == ORTHOGONAL) {
-        // 正交方向箭头
-        draw_list->AddLine(center, ImVec2(center.x + arrow_size * 2, center.y), 
-                          IM_COL32(0, 255, 0, 255), 2.0f);
-        draw_list->AddLine(center, ImVec2(center.x, center.y + arrow_size * 2), 
-                          IM_COL32(0, 255, 0, 255), 2.0f);
+        // 正交方向箭头（从中心格子中心出发）
+        draw_list->AddLine(centerCellPos, 
+                        ImVec2(centerCellPos.x + arrow_size * 2, centerCellPos.y), 
+                        IM_COL32(0, 255, 0, 255), 2.0f);
+        draw_list->AddLine(centerCellPos, 
+                        ImVec2(centerCellPos.x, centerCellPos.y + arrow_size * 2), 
+                        IM_COL32(0, 255, 0, 255), 2.0f);
         draw_list->AddTriangleFilled(
-            ImVec2(center.x + arrow_size * 2, center.y - 3),
-            ImVec2(center.x + arrow_size * 2, center.y + 3),
-            ImVec2(center.x + arrow_size * 2 + 8, center.y),
+            ImVec2(centerCellPos.x + arrow_size * 2, centerCellPos.y - 3),
+            ImVec2(centerCellPos.x + arrow_size * 2, centerCellPos.y + 3),
+            ImVec2(centerCellPos.x + arrow_size * 2 + 8, centerCellPos.y),
             IM_COL32(0, 255, 0, 255));
         draw_list->AddTriangleFilled(
-            ImVec2(center.x - 3, center.y + arrow_size * 2),
-            ImVec2(center.x + 3, center.y + arrow_size * 2),
-            ImVec2(center.x, center.y + arrow_size * 2 + 8),
+            ImVec2(centerCellPos.x - 3, centerCellPos.y + arrow_size * 2),
+            ImVec2(centerCellPos.x + 3, centerCellPos.y + arrow_size * 2),
+            ImVec2(centerCellPos.x, centerCellPos.y + arrow_size * 2 + 8),
             IM_COL32(0, 255, 0, 255));
     } else {
-        // 斜方向箭头
-        draw_list->AddLine(center, 
-                          ImVec2(center.x + arrow_size * 1.414f, center.y + arrow_size * 1.414f), 
-                          IM_COL32(0, 255, 255, 255), 2.0f);
-        draw_list->AddLine(center, 
-                          ImVec2(center.x - arrow_size * 1.414f, center.y + arrow_size * 1.414f), 
-                          IM_COL32(0, 255, 255, 255), 2.0f);
+        // 斜方向箭头（从中心格子中心出发）
+        draw_list->AddLine(centerCellPos, 
+                        ImVec2(centerCellPos.x + arrow_size * 1.414f, centerCellPos.y + arrow_size * 1.414f), 
+                        IM_COL32(0, 255, 255, 255), 2.0f);
+        draw_list->AddLine(centerCellPos, 
+                        ImVec2(centerCellPos.x - arrow_size * 1.414f, centerCellPos.y + arrow_size * 1.414f), 
+                        IM_COL32(0, 255, 255, 255), 2.0f);
         
         // 箭头头部
         draw_list->AddTriangleFilled(
-            ImVec2(center.x + arrow_size * 1.414f - 5, center.y + arrow_size * 1.414f - 5),
-            ImVec2(center.x + arrow_size * 1.414f + 5, center.y + arrow_size * 1.414f - 5),
-            ImVec2(center.x + arrow_size * 1.414f, center.y + arrow_size * 1.414f + 5),
+            ImVec2(centerCellPos.x + arrow_size * 1.414f - 5, centerCellPos.y + arrow_size * 1.414f - 5),
+            ImVec2(centerCellPos.x + arrow_size * 1.414f + 5, centerCellPos.y + arrow_size * 1.414f - 5),
+            ImVec2(centerCellPos.x + arrow_size * 1.414f, centerCellPos.y + arrow_size * 1.414f + 5),
             IM_COL32(0, 255, 255, 255));
         draw_list->AddTriangleFilled(
-            ImVec2(center.x - arrow_size * 1.414f - 5, center.y + arrow_size * 1.414f - 5),
-            ImVec2(center.x - arrow_size * 1.414f + 5, center.y + arrow_size * 1.414f - 5),
-            ImVec2(center.x - arrow_size * 1.414f, center.y + arrow_size * 1.414f + 5),
+            ImVec2(centerCellPos.x - arrow_size * 1.414f - 5, centerCellPos.y + arrow_size * 1.414f - 5),
+            ImVec2(centerCellPos.x - arrow_size * 1.414f + 5, centerCellPos.y + arrow_size * 1.414f - 5),
+            ImVec2(centerCellPos.x - arrow_size * 1.414f, centerCellPos.y + arrow_size * 1.414f + 5),
             IM_COL32(0, 255, 255, 255));
     }
 }
@@ -144,6 +149,7 @@ void DrawGrid() {
 // 处理鼠标选择
 void HandleSelection() {
     if (!ImGui::IsMouseClicked(0)) return;
+    if (ImGui::GetIO().WantCaptureMouse) return;  // 检测鼠标是否被 ImGui 捕获
     
     ImVec2 mouse_pos = ImGui::GetMousePos();
     ImVec2 center = gridCenter();
